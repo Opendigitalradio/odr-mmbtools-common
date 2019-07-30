@@ -71,9 +71,7 @@ AC_LANG_POP([C++])
 # ZeroMQ
 AX_ZMQ([4.0.0], [], AC_MSG_ERROR(ZeroMQ 4.0.0 is required))
 
-AC_DEFINE([HAVE_INPUT_ZEROMQ], [1], [Define if ZeroMQ input is enabled])
-AC_DEFINE([HAVE_OUTPUT_ZEROMQ], [1], [Define if ZeroMQ output is enabled])
-AC_DEFINE([HAVE_RC_ZEROMQ], [1], [Define if ZeroMQ enabled for rc])
+AC_DEFINE([HAVE_ZEROMQ], [1], [Define if ZeroMQ available])
 
 AM_CONDITIONAL([IS_GIT_REPO], [test -d '.git'])
 

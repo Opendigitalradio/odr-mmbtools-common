@@ -8,23 +8,21 @@
 
     http://www.opendigitalradio.org
 
-   This module adds remote-control capability to some of the dabmux modules.
+   This module adds remote-control capability to some of the dabmux/dabmod modules.
  */
 /*
-   This file is part of ODR-DabMux.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   ODR-DabMux is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   ODR-DabMux is distributed in the hope that it will be useful,
+   This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with ODR-DabMux.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -33,7 +31,7 @@
 #  include "config.h"
 #endif
 
-#if defined(HAVE_RC_ZEROMQ)
+#if defined(HAVE_ZEROMQ)
 #  include "zmq.hpp"
 #endif
 
@@ -78,7 +76,7 @@ class RemoteControllable;
 class BaseRemoteController {
     public:
         /* When this returns one, the remote controller cannot be
-         * used anymore, and must be restarted by dabmux
+         * used anymore, and must be restarted
          */
         virtual bool fault_detected() = 0;
 
@@ -214,8 +212,8 @@ class RemoteControllerTelnet : public BaseRemoteController {
         int m_port;
 };
 
-#if defined(HAVE_RC_ZEROMQ)
-/* Implements a Remote controller using zmq transportlayer
+#if defined(HAVE_ZEROMQ)
+/* Implements a Remote controller using ZMQ transportlayer
  * that listens on localhost
  */
 class RemoteControllerZmq : public BaseRemoteController {
