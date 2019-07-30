@@ -1,0 +1,46 @@
+# Copyright (C) 2019 Matthias P. Braendli, http://opendigitalradio.org
+
+if IS_GIT_REPO
+GITVERSION_FLAGS = -DGITVERSION="\"`git describe --dirty || echo 'unknown'`\""
+else
+GITVERSION_FLAGS =
+endif
+
+bin_PROGRAMS=common-test
+
+INCLUDE=-Isrc
+
+common_test_CFLAGS   =-Wall $(INCLUDE) $(GITVERSION_FLAGS)
+common_test_CXXFLAGS =-Wall -std=c++11 $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
+common_test_LDADD    =$(ZMQ_LIBS) $(BOOST_LDFLAGS) \
+					  -lpthread $(BOOST_SYSTEM_LIB) $(BOOST_THREAD_LIB) $(BOOST_ASIO_LIB)
+common_test_SOURCES  = main.cpp \
+					   src/crc.h src/crc.c \
+					   src/ClockTAI.h src/ClockTAI.cpp \
+					   src/Log.h src/Log.cpp \
+					   src/ReedSolomon.h src/ReedSolomon.cpp \
+					   src/RemoteControl.h \
+					   src/RemoteControl.cpp \
+					   src/Socket.h src/Socket.cpp \
+					   src/ThreadsafeQueue.h \
+					   src/charset/charset.h src/charset/charset.cpp \
+					   src/charset/utf8.h \
+					   src/charset/utf8/checked.h \
+					   src/charset/utf8/core.h \
+					   src/charset/utf8/unchecked.h \
+					   src/edi/PFT.hpp src/edi/PFT.cpp \
+					   src/edi/STIDecoder.hpp src/edi/STIDecoder.cpp \
+					   src/edi/STIWriter.hpp src/edi/STIWriter.cpp \
+					   src/edi/buffer_unpack.hpp \
+					   src/edi/common.hpp src/edi/common.cpp \
+					   src/fec/char.h \
+					   src/fec/decode_rs.h src/fec/decode_rs_char.c \
+					   src/fec/encode_rs.h src/fec/encode_rs_char.c \
+					   src/fec/fec.h \
+					   src/fec/init_rs.h src/fec/init_rs_char.c \
+					   src/fec/rs-common.h
+
+EXTRA_DIST	= COPYING NEWS README.md ChangeLog \
+			  lib/fec/README.md src/fec/LICENSE \
+			  src/charset/README
+
