@@ -41,14 +41,11 @@
 #include <string>
 #include <atomic>
 #include <iostream>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
-#include <boost/foreach.hpp>
-#include <boost/tokenizer.hpp>
 #include <thread>
 #include <stdexcept>
 
 #include "Log.h"
+#include "Socket.h"
 
 #define RC_ADD_PARAMETER(p, desc) {   \
   std::vector<std::string> p; \
@@ -161,13 +158,11 @@ class RemoteControllerTelnet : public BaseRemoteController {
     public:
         RemoteControllerTelnet()
             : m_active(false),
-            m_io_service(),
             m_fault(false),
             m_port(0) { }
 
         RemoteControllerTelnet(int port)
             : m_active(port > 0),
-            m_io_service(),
             m_fault(false),
             m_port(port)
         {
@@ -189,19 +184,11 @@ class RemoteControllerTelnet : public BaseRemoteController {
 
         void process(long);
 
-        void dispatch_command(boost::asio::ip::tcp::socket& socket,
-                std::string command);
-
-        void reply(boost::asio::ip::tcp::socket& socket, std::string message);
-
-        void handle_accept(
-                const boost::system::error_code& boost_error,
-                boost::shared_ptr< boost::asio::ip::tcp::socket > socket,
-                boost::asio::ip::tcp::acceptor& acceptor);
+        void dispatch_command(Socket::TCPSocket& socket, std::string command);
+        void reply(Socket::TCPSocket& socket, std::string message);
+        void handle_accept(Socket::TCPSocket&& socket);
 
         std::atomic<bool> m_active;
-
-        boost::asio::io_service m_io_service;
 
         /* This is set to true if a fault occurred */
         std::atomic<bool> m_fault;
@@ -209,6 +196,7 @@ class RemoteControllerTelnet : public BaseRemoteController {
 
         std::thread m_child_thread;
 
+        Socket::TCPSocket m_socket;
         int m_port;
 };
 

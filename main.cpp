@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
     ReedSolomon rs(255, 207);
 
-    RemoteControllerTelnet telnet;
+    RemoteControllerTelnet telnet(2121);
     etiLog.level(info) << "RC telnet started";
 
     rcs.enrol(&ct);
@@ -48,4 +48,7 @@ int main(int argc, char **argv)
 
     EdiDecoder::STIWriter edi_stiwriter;
     EdiDecoder::STIDecoder edi_decoder(edi_stiwriter, true);
+
+    etiLog.level(info) << "Sleep for 60s";
+    this_thread::sleep_for(chrono::seconds(60));
 }

@@ -12,8 +12,7 @@ INCLUDE=-Isrc
 
 common_test_CFLAGS   =-Wall $(INCLUDE) $(GITVERSION_FLAGS)
 common_test_CXXFLAGS =-Wall -std=c++11 $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
-common_test_LDADD    =$(ZMQ_LIBS) $(BOOST_LDFLAGS) \
-					  -lpthread $(BOOST_SYSTEM_LIB) $(BOOST_THREAD_LIB) $(BOOST_ASIO_LIB)
+common_test_LDADD    =$(ZMQ_LIBS) -lpthread
 common_test_SOURCES  = main.cpp \
 					   src/crc.h src/crc.c \
 					   src/ClockTAI.h src/ClockTAI.cpp \
