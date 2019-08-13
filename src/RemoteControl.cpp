@@ -26,6 +26,7 @@
 #include <string>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "RemoteControl.h"
 
