@@ -30,6 +30,8 @@ common_test_SOURCES  = main.cpp \
 					   src/edi/PFT.hpp src/edi/PFT.cpp \
 					   src/edi/STIDecoder.hpp src/edi/STIDecoder.cpp \
 					   src/edi/STIWriter.hpp src/edi/STIWriter.cpp \
+					   src/edi/ETIDecoder.hpp src/edi/ETIDecoder.cpp \
+					   src/edi/eti.hpp src/edi/eti.cpp \
 					   src/edi/buffer_unpack.hpp \
 					   src/edi/common.hpp src/edi/common.cpp \
 					   src/fec/char.h \
