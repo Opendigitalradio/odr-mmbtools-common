@@ -11,7 +11,7 @@ bin_PROGRAMS=common-test
 INCLUDE=-Isrc
 
 common_test_CFLAGS   =-Wall $(INCLUDE) $(GITVERSION_FLAGS)
-common_test_CXXFLAGS =-Wall -std=c++11 $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
+common_test_CXXFLAGS =-Wall -std=c++11 -DTAI_TEST $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
 common_test_LDADD    =$(ZMQ_LIBS) -lpthread
 common_test_SOURCES  = main.cpp \
 					   src/crc.h src/crc.c \
