@@ -28,6 +28,7 @@
 #include "charset/charset.h"
 #include "edi/STIDecoder.hpp"
 #include "edi/STIWriter.hpp"
+#include "edioutput/AFPacket.h"
 
 using namespace std;
 

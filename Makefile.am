@@ -34,6 +34,19 @@ common_test_SOURCES  = main.cpp \
 					   src/edi/eti.hpp src/edi/eti.cpp \
 					   src/edi/buffer_unpack.hpp \
 					   src/edi/common.hpp src/edi/common.cpp \
+					   src/edioutput/AFPacket.cpp \
+					   src/edioutput/AFPacket.h \
+					   src/edioutput/Config.h \
+					   src/edioutput/Interleaver.cpp \
+					   src/edioutput/Interleaver.h \
+					   src/edioutput/PFT.cpp \
+					   src/edioutput/PFT.h \
+					   src/edioutput/TagItems.cpp \
+					   src/edioutput/TagItems.h \
+					   src/edioutput/TagPacket.cpp \
+					   src/edioutput/TagPacket.h \
+					   src/edioutput/Transport.cpp \
+					   src/edioutput/Transport.h \
 					   src/fec/char.h \
 					   src/fec/decode_rs.h src/fec/decode_rs_char.c \
 					   src/fec/encode_rs.h src/fec/encode_rs_char.c \
