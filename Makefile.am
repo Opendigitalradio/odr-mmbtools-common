@@ -36,7 +36,7 @@ common_test_SOURCES  = main.cpp \
 					   src/edi/common.hpp src/edi/common.cpp \
 					   src/edioutput/AFPacket.cpp \
 					   src/edioutput/AFPacket.h \
-					   src/edioutput/Config.h \
+					   src/edioutput/EDIConfig.h \
 					   src/edioutput/Interleaver.cpp \
 					   src/edioutput/Interleaver.h \
 					   src/edioutput/PFT.cpp \
