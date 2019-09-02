@@ -16,6 +16,7 @@ common_test_LDADD    =$(ZMQ_LIBS) -lpthread
 common_test_SOURCES  = main.cpp \
 					   src/crc.h src/crc.c \
 					   src/ClockTAI.h src/ClockTAI.cpp \
+					   src/Globals.cpp \
 					   src/Log.h src/Log.cpp \
 					   src/ReedSolomon.h src/ReedSolomon.cpp \
 					   src/RemoteControl.h \
