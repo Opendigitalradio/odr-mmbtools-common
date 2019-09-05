@@ -221,7 +221,7 @@ decode_state_t TagDispatcher::decode_afpacket(
         return {false, 0};
     }
 
-    if (m_last_seq + 1 != seq) {
+    if (m_last_seq + (uint16_t)1 != seq) {
         etiLog.level(warn) << "EDI AF Packet sequence error, " << seq;
     }
     m_last_seq = seq;
