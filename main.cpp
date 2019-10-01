@@ -47,7 +47,10 @@ int main(int argc, char **argv)
     CharsetConverter charset_converter;
     charset_converter.utf8_to_ebu("From UTF to EBU", false);
 
-    EdiDecoder::STIWriter edi_stiwriter;
+    auto sti_frame_cb = [](EdiDecoder::sti_frame_t&& f) {
+        etiLog.level(info) << "Got STI frame with TS = " << f.timestamp.to_string();
+    };
+    EdiDecoder::STIWriter edi_stiwriter(sti_frame_cb);
     EdiDecoder::STIDecoder edi_decoder(edi_stiwriter, true);
 
     etiLog.level(info) << "Sleep for 60s";
