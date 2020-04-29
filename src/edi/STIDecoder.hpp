@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019
+   Copyright (C) 2020
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    http://opendigitalradio.org
@@ -117,13 +117,13 @@ class STIDecoder {
         void setMaxDelay(int num_af_packets);
 
     private:
-        bool decode_starptr(const std::vector<uint8_t> &value, uint16_t);
-        bool decode_dsti(const std::vector<uint8_t> &value, uint16_t);
-        bool decode_ssn(const std::vector<uint8_t> &value, uint16_t n);
-        bool decode_stardmy(const std::vector<uint8_t> &value, uint16_t);
+        bool decode_starptr(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_dsti(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_ssn(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_stardmy(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
 
-        bool decode_odraudiolevel(const std::vector<uint8_t> &value, uint16_t);
-        bool decode_odrversion(const std::vector<uint8_t> &value, uint16_t);
+        bool decode_odraudiolevel(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_odrversion(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
 
         void packet_completed();
 

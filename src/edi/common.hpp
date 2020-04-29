@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019
+   Copyright (C) 2020
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    http://opendigitalradio.org
@@ -81,7 +81,14 @@ class TagDispatcher {
          */
         void setMaxDelay(int num_af_packets);
 
-        using tag_handler = std::function<bool(std::vector<uint8_t>, uint16_t)>;
+        /* Handler function for a tag. The first argument contains the tag value,
+         * the second argument contains the tag name */
+        using tag_name_t = std::array<uint8_t, 4>;
+        using tag_handler = std::function<bool(std::vector<uint8_t>&, const tag_name_t&)>;
+
+        /* Register a handler for a tag. If the tag string can be length 2, 3 or 4.
+         * If is shorter than 4, it will perform a longest match on the tag name.
+         */
         void register_tag(const std::string& tag, tag_handler&& h);
 
     private:

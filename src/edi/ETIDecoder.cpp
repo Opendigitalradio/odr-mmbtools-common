@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019
+   Copyright (C) 2020
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    http://opendigitalradio.org
@@ -63,7 +63,7 @@ void ETIDecoder::setMaxDelay(int num_af_packets)
 
 #define AFPACKET_HEADER_LEN 10 // includes SYNC
 
-bool ETIDecoder::decode_starptr(const vector<uint8_t> &value, uint16_t)
+bool ETIDecoder::decode_starptr(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     if (value.size() != 0x40 / 8) {
         etiLog.log(warn, "Incorrect length %02lx for *PTR", value.size());
@@ -83,7 +83,7 @@ bool ETIDecoder::decode_starptr(const vector<uint8_t> &value, uint16_t)
     return true;
 }
 
-bool ETIDecoder::decode_deti(const vector<uint8_t> &value, uint16_t)
+bool ETIDecoder::decode_deti(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     /*
     uint16_t detiHeader = fct | (fcth << 8) | (rfudf << 13) | (ficf << 14) | (atstf << 15);
@@ -183,12 +183,13 @@ bool ETIDecoder::decode_deti(const vector<uint8_t> &value, uint16_t)
     return true;
 }
 
-bool ETIDecoder::decode_estn(const vector<uint8_t> &value, uint16_t n)
+bool ETIDecoder::decode_estn(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& name)
 {
     uint32_t sstc = read_24b(value.begin());
 
     eti_stc_data stc;
 
+    const uint8_t n = name[3];
     stc.stream_index = n - 1; // n is 1-indexed
     stc.scid = (sstc >> 18) & 0x3F;
     stc.sad = (sstc >> 8) & 0x3FF;
@@ -207,7 +208,7 @@ bool ETIDecoder::decode_estn(const vector<uint8_t> &value, uint16_t n)
     return true;
 }
 
-bool ETIDecoder::decode_stardmy(const vector<uint8_t>& /*value*/, uint16_t)
+bool ETIDecoder::decode_stardmy(const std::vector<uint8_t>&, const TagDispatcher::tag_name_t&)
 {
     return true;
 }

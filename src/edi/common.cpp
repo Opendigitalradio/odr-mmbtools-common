@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019
+   Copyright (C) 2020
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    http://opendigitalradio.org
@@ -326,6 +326,9 @@ bool TagDispatcher::decode_tagpacket(const vector<uint8_t> &payload)
             break;
         }
 
+        const array<uint8_t, 4> tag_name({
+               (uint8_t)tag_sz[0], (uint8_t)tag_sz[1], (uint8_t)tag_sz[2], (uint8_t)tag_sz[3]
+               });
         vector<uint8_t> tag_value(taglength);
         copy(   payload.begin() + i+8,
                 payload.begin() + i+8+taglength,
@@ -336,21 +339,17 @@ bool TagDispatcher::decode_tagpacket(const vector<uint8_t> &payload)
         for (auto tag_handler : m_handlers) {
             if (tag_handler.first.size() == 4 and tag_handler.first == tag) {
                 found = true;
-                tagsuccess = tag_handler.second(tag_value, 0);
+                tagsuccess = tag_handler.second(tag_value, tag_name);
             }
             else if (tag_handler.first.size() == 3 and
                     tag.substr(0, 3) == tag_handler.first) {
                 found = true;
-                uint8_t n = tag_sz[3];
-                tagsuccess = tag_handler.second(tag_value, n);
+                tagsuccess = tag_handler.second(tag_value, tag_name);
             }
             else if (tag_handler.first.size() == 2 and
                     tag.substr(0, 2) == tag_handler.first) {
                 found = true;
-                uint16_t n = 0;
-                n = (uint16_t)(tag_sz[2]) << 8;
-                n |= (uint16_t)(tag_sz[3]);
-                tagsuccess = tag_handler.second(tag_value, n);
+                tagsuccess = tag_handler.second(tag_value, tag_name);
             }
         }
 

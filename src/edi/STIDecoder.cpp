@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019
+   Copyright (C) 2020
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    http://opendigitalradio.org
@@ -67,7 +67,7 @@ void STIDecoder::setMaxDelay(int num_af_packets)
 
 #define AFPACKET_HEADER_LEN 10 // includes SYNC
 
-bool STIDecoder::decode_starptr(const vector<uint8_t> &value, uint16_t)
+bool STIDecoder::decode_starptr(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     if (value.size() != 0x40 / 8) {
         etiLog.log(warn, "Incorrect length %02lx for *PTR", value.size());
@@ -87,7 +87,7 @@ bool STIDecoder::decode_starptr(const vector<uint8_t> &value, uint16_t)
     return true;
 }
 
-bool STIDecoder::decode_dsti(const vector<uint8_t> &value, uint16_t)
+bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     size_t offset = 0;
 
@@ -156,9 +156,13 @@ bool STIDecoder::decode_dsti(const vector<uint8_t> &value, uint16_t)
     return true;
 }
 
-bool STIDecoder::decode_ssn(const vector<uint8_t> &value, uint16_t n)
+bool STIDecoder::decode_ssn(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& name)
 {
     sti_payload_data sti;
+
+    uint16_t n = 0;
+    n = (uint16_t)(name[2]) << 8;
+    n |= (uint16_t)(name[3]);
 
     sti.stream_index = n - 1; // n is 1-indexed
     sti.rfa = value[0] >> 3;
@@ -182,12 +186,12 @@ bool STIDecoder::decode_ssn(const vector<uint8_t> &value, uint16_t n)
     return true;
 }
 
-bool STIDecoder::decode_stardmy(const vector<uint8_t>& /*value*/, uint16_t)
+bool STIDecoder::decode_stardmy(const std::vector<uint8_t>&, const TagDispatcher::tag_name_t&)
 {
     return true;
 }
 
-bool STIDecoder::decode_odraudiolevel(const vector<uint8_t>& value, uint16_t)
+bool STIDecoder::decode_odraudiolevel(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     constexpr size_t expected_length = 2 * sizeof(int16_t);
 
@@ -210,7 +214,7 @@ bool STIDecoder::decode_odraudiolevel(const vector<uint8_t>& value, uint16_t)
     return true;
 }
 
-bool STIDecoder::decode_odrversion(const vector<uint8_t>& value, uint16_t)
+bool STIDecoder::decode_odrversion(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
 {
     const auto vd = parse_odr_version_data(value);
     m_data_collector.update_odr_version(vd);
