@@ -30,9 +30,9 @@ namespace EdiDecoder {
 
 using namespace std;
 
-STIDecoder::STIDecoder(STIDataCollector& data_collector, bool verbose) :
+STIDecoder::STIDecoder(STIDataCollector& data_collector) :
     m_data_collector(data_collector),
-    m_dispatcher(std::bind(&STIDecoder::packet_completed, this), verbose)
+    m_dispatcher(std::bind(&STIDecoder::packet_completed, this))
 {
     using std::placeholders::_1;
     using std::placeholders::_2;
@@ -48,6 +48,11 @@ STIDecoder::STIDecoder(STIDataCollector& data_collector, bool verbose) :
             std::bind(&STIDecoder::decode_odraudiolevel, this, _1, _2));
     m_dispatcher.register_tag("ODRv",
             std::bind(&STIDecoder::decode_odrversion, this, _1, _2));
+}
+
+void STIDecoder::set_verbose(bool verbose)
+{
+    m_dispatcher.set_verbose(verbose);
 }
 
 void STIDecoder::push_bytes(const vector<uint8_t> &buf)
@@ -67,7 +72,7 @@ void STIDecoder::setMaxDelay(int num_af_packets)
 
 #define AFPACKET_HEADER_LEN 10 // includes SYNC
 
-bool STIDecoder::decode_starptr(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
+bool STIDecoder::decode_starptr(const std::vector<uint8_t>& value, const tag_name_t& n)
 {
     if (value.size() != 0x40 / 8) {
         etiLog.log(warn, "Incorrect length %02lx for *PTR", value.size());
@@ -87,7 +92,7 @@ bool STIDecoder::decode_starptr(const std::vector<uint8_t>& value, const TagDisp
     return true;
 }
 
-bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
+bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const tag_name_t& n)
 {
     size_t offset = 0;
 
@@ -156,7 +161,7 @@ bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const TagDispatc
     return true;
 }
 
-bool STIDecoder::decode_ssn(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& name)
+bool STIDecoder::decode_ssn(const std::vector<uint8_t>& value, const tag_name_t& name)
 {
     sti_payload_data sti;
 
@@ -186,12 +191,12 @@ bool STIDecoder::decode_ssn(const std::vector<uint8_t>& value, const TagDispatch
     return true;
 }
 
-bool STIDecoder::decode_stardmy(const std::vector<uint8_t>&, const TagDispatcher::tag_name_t&)
+bool STIDecoder::decode_stardmy(const std::vector<uint8_t>&, const tag_name_t&)
 {
     return true;
 }
 
-bool STIDecoder::decode_odraudiolevel(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
+bool STIDecoder::decode_odraudiolevel(const std::vector<uint8_t>& value, const tag_name_t& n)
 {
     constexpr size_t expected_length = 2 * sizeof(int16_t);
 
@@ -214,7 +219,7 @@ bool STIDecoder::decode_odraudiolevel(const std::vector<uint8_t>& value, const T
     return true;
 }
 
-bool STIDecoder::decode_odrversion(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n)
+bool STIDecoder::decode_odrversion(const std::vector<uint8_t>& value, const tag_name_t& n)
 {
     const auto vd = parse_odr_version_data(value);
     m_data_collector.update_odr_version(vd);

@@ -98,7 +98,9 @@ class STIDataCollector {
  */
 class STIDecoder {
     public:
-        STIDecoder(STIDataCollector& data_collector, bool verbose);
+        STIDecoder(STIDataCollector& data_collector);
+
+        void set_verbose(bool verbose);
 
         /* Push bytes into the decoder. The buf can contain more
          * than a single packet. This is useful when reading from streams
@@ -117,13 +119,13 @@ class STIDecoder {
         void setMaxDelay(int num_af_packets);
 
     private:
-        bool decode_starptr(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
-        bool decode_dsti(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
-        bool decode_ssn(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
-        bool decode_stardmy(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_starptr(const std::vector<uint8_t>& value, const tag_name_t& n);
+        bool decode_dsti(const std::vector<uint8_t>& value, const tag_name_t& n);
+        bool decode_ssn(const std::vector<uint8_t>& value, const tag_name_t& n);
+        bool decode_stardmy(const std::vector<uint8_t>& value, const tag_name_t& n);
 
-        bool decode_odraudiolevel(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
-        bool decode_odrversion(const std::vector<uint8_t>& value, const TagDispatcher::tag_name_t& n);
+        bool decode_odraudiolevel(const std::vector<uint8_t>& value, const tag_name_t& n);
+        bool decode_odrversion(const std::vector<uint8_t>& value, const tag_name_t& n);
 
         void packet_completed();
 

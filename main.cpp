@@ -51,7 +51,7 @@ int main(int argc, char **argv)
         etiLog.level(info) << "Got STI frame with TS = " << f.timestamp.to_string();
     };
     EdiDecoder::STIWriter edi_stiwriter(sti_frame_cb);
-    EdiDecoder::STIDecoder edi_decoder(edi_stiwriter, true);
+    EdiDecoder::STIDecoder edi_decoder(edi_stiwriter);
 
     etiLog.level(info) << "Sleep for 60s";
     this_thread::sleep_for(chrono::seconds(60));

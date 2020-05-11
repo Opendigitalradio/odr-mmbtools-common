@@ -26,6 +26,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <cctype>
 
 namespace EdiDecoder {
 
@@ -111,10 +112,30 @@ std::chrono::system_clock::time_point frame_timestamp_t::to_system_clock() const
     return ts;
 }
 
+std::string tag_name_to_human_readable(const tag_name_t& name)
+{
+    std::string s;
+    for (const uint8_t c : name) {
+        if (isprint(c)) {
+            s += (char)c;
+        }
+        else {
+            char escaped[5];
+            snprintf(escaped, 5, "\\x%02x", c);
+            s += escaped;
+        }
+    }
+    return s;
+}
 
 TagDispatcher::TagDispatcher(
-        std::function<void()>&& af_packet_completed, bool verbose) :
-    m_af_packet_completed(move(af_packet_completed))
+        std::function<void()>&& af_packet_completed) :
+    m_af_packet_completed(move(af_packet_completed)),
+    m_tagpacket_handler([](const std::vector<uint8_t>& ignore){})
+{
+}
+
+void TagDispatcher::set_verbose(bool verbose)
 {
     m_pft.setVerbose(verbose);
 }
@@ -295,6 +316,11 @@ void TagDispatcher::register_tag(const std::string& tag, tag_handler&& h)
     m_handlers[tag] = move(h);
 }
 
+void TagDispatcher::register_tagpacket_handler(tagpacket_handler&& h)
+{
+    m_tagpacket_handler = move(h);
+}
+
 
 bool TagDispatcher::decode_tagpacket(const vector<uint8_t> &payload)
 {
@@ -334,22 +360,15 @@ bool TagDispatcher::decode_tagpacket(const vector<uint8_t> &payload)
                 payload.begin() + i+8+taglength,
                 tag_value.begin());
 
-        bool tagsuccess = false;
+        bool tagsuccess = true;
         bool found = false;
         for (auto tag_handler : m_handlers) {
-            if (tag_handler.first.size() == 4 and tag_handler.first == tag) {
+            if (    (tag_handler.first.size() == 4 and tag == tag_handler.first) or
+                    (tag_handler.first.size() == 3 and tag.substr(0, 3) == tag_handler.first) or
+                    (tag_handler.first.size() == 2 and tag.substr(0, 2) == tag_handler.first) or
+                    (tag_handler.first.size() == 1 and tag.substr(0, 1) == tag_handler.first)) {
                 found = true;
-                tagsuccess = tag_handler.second(tag_value, tag_name);
-            }
-            else if (tag_handler.first.size() == 3 and
-                    tag.substr(0, 3) == tag_handler.first) {
-                found = true;
-                tagsuccess = tag_handler.second(tag_value, tag_name);
-            }
-            else if (tag_handler.first.size() == 2 and
-                    tag.substr(0, 2) == tag_handler.first) {
-                found = true;
-                tagsuccess = tag_handler.second(tag_value, tag_name);
+                tagsuccess &= tag_handler.second(tag_value, tag_name);
             }
         }
 
@@ -364,6 +383,8 @@ bool TagDispatcher::decode_tagpacket(const vector<uint8_t> &payload)
             break;
         }
     }
+
+    m_tagpacket_handler(payload);
 
     return success;
 }
