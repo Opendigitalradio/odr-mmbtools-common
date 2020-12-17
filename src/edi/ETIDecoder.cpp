@@ -107,7 +107,7 @@ bool ETIDecoder::decode_deti(const std::vector<uint8_t>& value, const tag_name_t
     uint8_t fcth = (detiHeader >> 8) & 0x1F;
     uint8_t fct = detiHeader & 0xFF;
 
-    fc.dflc = fcth * 250 + fct; // modulo 5000 counter
+    fc.dlfc = fcth * 250 + fct; // modulo 5000 counter
 
     uint32_t etiHeader = read_32b(value.begin() + 2);
 

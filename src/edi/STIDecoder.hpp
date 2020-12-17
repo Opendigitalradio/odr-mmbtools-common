@@ -34,7 +34,7 @@ struct sti_management_data {
     bool stihf;
     bool atstf;
     bool rfadf;
-    uint16_t dflc;
+    uint16_t dlfc;
 
     uint32_t tsta;
 };

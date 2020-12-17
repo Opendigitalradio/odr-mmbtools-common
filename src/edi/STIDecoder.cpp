@@ -107,7 +107,7 @@ bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const tag_name_t
     uint8_t dfcth = (dstiHeader >> 8) & 0x1F;
     uint8_t dfctl = dstiHeader & 0xFF;
 
-    md.dflc = dfcth * 250 + dfctl; // modulo 5000 counter
+    md.dlfc = dfcth * 250 + dfctl; // modulo 5000 counter
 
     const size_t expected_length = 2 +
         (md.stihf ? 3 : 0) +
