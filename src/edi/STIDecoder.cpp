@@ -60,9 +60,9 @@ void STIDecoder::push_bytes(const vector<uint8_t> &buf)
     m_dispatcher.push_bytes(buf);
 }
 
-void STIDecoder::push_packet(const vector<uint8_t> &buf)
+void STIDecoder::push_packet(Packet &pack)
 {
-    m_dispatcher.push_packet(buf);
+    m_dispatcher.push_packet(pack);
 }
 
 void STIDecoder::setMaxDelay(int num_af_packets)
@@ -115,10 +115,14 @@ bool STIDecoder::decode_dsti(const std::vector<uint8_t>& value, const tag_name_t
         (md.rfadf ? 9 : 0);
 
     if (value.size() != expected_length) {
-        throw std::runtime_error("EDI dsti: decoding error:"
-                "value.size() != expected_length: " +
-               to_string(value.size()) + " " +
-               to_string(expected_length));
+        etiLog.level(warn) << "EDI dsti: decoding error: " <<
+            "value.size() != expected_length: " <<
+               value.size() << " " <<
+               expected_length << " " <<
+               (md.stihf ? "STIHF " : " ") <<
+               (md.atstf ? "ATSTF " : " ") <<
+               (md.rfadf ? "RFADF " : " ");
+        return false;
     }
 
     if (md.stihf) {
