@@ -38,8 +38,6 @@ common_test_SOURCES  = main.cpp \
 					   src/edioutput/AFPacket.cpp \
 					   src/edioutput/AFPacket.h \
 					   src/edioutput/EDIConfig.h \
-					   src/edioutput/Interleaver.cpp \
-					   src/edioutput/Interleaver.h \
 					   src/edioutput/PFT.cpp \
 					   src/edioutput/PFT.h \
 					   src/edioutput/TagItems.cpp \
