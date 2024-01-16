@@ -34,7 +34,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    ClockTAI ct({"https://www.ietf.org/timezones/data/leap-seconds.list", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.list"});
+    ClockTAI ct({"https://127.0.0.1", "https://example.com", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.lis"});
     etiLog.level(info) << "TAI offset = " << ct.get_offset();
 
     ReedSolomon rs(255, 207);
@@ -53,6 +53,26 @@ int main(int argc, char **argv)
     EdiDecoder::STIWriter edi_stiwriter(sti_frame_cb);
     EdiDecoder::STIDecoder edi_decoder(edi_stiwriter);
 
-    etiLog.level(info) << "Sleep for 60s";
-    this_thread::sleep_for(chrono::seconds(60));
+    etiLog.level(info) << "Sleep 3";
+    this_thread::sleep_for(chrono::seconds(3));
+    etiLog.level(info) << "TAI offset is " << ct.get_offset() << " " << map_to_json(ct.get_all_values());
+
+    this_thread::sleep_for(chrono::seconds(3));
+    etiLog.level(info) << "Override to 38";
+    ct.set_parameter("tai_utc_offset", "38");
+
+    for (size_t i = 0; i < 3; i++) {
+        this_thread::sleep_for(chrono::seconds(1));
+        etiLog.level(info) << "TAI offset is " << ct.get_offset() << " " << map_to_json(ct.get_all_values());
+    }
+
+    this_thread::sleep_for(chrono::seconds(1));
+    auto new_url = "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.list";
+    etiLog.level(info) << "Set URL to " << new_url;
+    ct.set_parameter("url", new_url);
+
+    while (true) {
+        this_thread::sleep_for(chrono::seconds(3));
+        etiLog.level(info) << "TAI offset is " << ct.get_offset() << " " << map_to_json(ct.get_all_values());
+    }
 }

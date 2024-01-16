@@ -11,7 +11,7 @@ bin_PROGRAMS=common-test
 INCLUDE=-Isrc
 
 common_test_CFLAGS   =-Wall $(INCLUDE) $(GITVERSION_FLAGS)
-common_test_CXXFLAGS =-Wall -std=c++11 -DTAI_TEST $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
+common_test_CXXFLAGS =-Wall -DTAI_TEST $(INCLUDE) $(GITVERSION_FLAGS) $(ZMQ_CPPFLAGS)
 common_test_LDADD    =$(ZMQ_LIBS) -lpthread
 common_test_SOURCES  = main.cpp \
 					   src/crc.h src/crc.c \
@@ -19,8 +19,8 @@ common_test_SOURCES  = main.cpp \
 					   src/Globals.cpp \
 					   src/Log.h src/Log.cpp \
 					   src/ReedSolomon.h src/ReedSolomon.cpp \
-					   src/RemoteControl.h \
-					   src/RemoteControl.cpp \
+					   src/RemoteControl.h src/RemoteControl.cpp \
+					   src/Json.h src/Json.cpp \
 					   src/Socket.h src/Socket.cpp \
 					   src/ThreadsafeQueue.h \
 					   src/charset/charset.h src/charset/charset.cpp \
