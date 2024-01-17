@@ -28,6 +28,9 @@ common_test_SOURCES  = main.cpp \
 					   src/charset/utf8/checked.h \
 					   src/charset/utf8/core.h \
 					   src/charset/utf8/unchecked.h \
+					   src/charset/utf8/cpp11.h \
+					   src/charset/utf8/cpp17.h \
+					   src/charset/utf8/cpp20.h \
 					   src/edi/PFT.hpp src/edi/PFT.cpp \
 					   src/edi/STIDecoder.hpp src/edi/STIDecoder.cpp \
 					   src/edi/STIWriter.hpp src/edi/STIWriter.cpp \

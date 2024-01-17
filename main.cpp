@@ -45,7 +45,9 @@ int main(int argc, char **argv)
     rcs.enrol(&ct);
 
     CharsetConverter charset_converter;
-    charset_converter.utf8_to_ebu("From UTF to EBU", false);
+    const auto ebu_text = charset_converter.utf8_to_ebu("From UTF to EBU: éö", false);
+    const auto utf_text = charset_converter.ebu_to_utf8(ebu_text);
+    etiLog.level(info) << "EBU-UTF8 conversion: " << utf_text;
 
     auto sti_frame_cb = [](EdiDecoder::sti_frame_t&& f) {
         etiLog.level(info) << "Got STI frame with TS = " << f.timestamp.to_string();
