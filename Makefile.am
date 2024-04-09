@@ -1,7 +1,7 @@
 # Copyright (C) 2019 Matthias P. Braendli, http://opendigitalradio.org
 
 if IS_GIT_REPO
-GITVERSION_FLAGS = -DGITVERSION="\"`git describe --dirty || echo 'unknown'`\""
+GITVERSION_FLAGS = -DGITVERSION="\"`git rev-parse --short HEAD`\""
 else
 GITVERSION_FLAGS =
 endif
@@ -54,7 +54,11 @@ common_test_SOURCES  = main.cpp \
 					   src/fec/encode_rs.h src/fec/encode_rs_char.c \
 					   src/fec/fec.h \
 					   src/fec/init_rs.h src/fec/init_rs_char.c \
-					   src/fec/rs-common.h
+					   src/fec/rs-common.h \
+					   src/srt/socketoptions.hpp src/srt/socketoptions.cpp \
+					   src/srt/srt_socket.hpp src/srt/srt_socket.cpp \
+					   src/srt/netaddr_any.hpp src/srt/netaddr_any.cpp
+
 
 EXTRA_DIST	= COPYING NEWS README.md ChangeLog \
 			  lib/fec/README.md src/fec/LICENSE \

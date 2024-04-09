@@ -29,10 +29,20 @@
 #include "edi/STIDecoder.hpp"
 #include "edi/STIWriter.hpp"
 #include "edioutput/AFPacket.h"
+#include "srt/netaddr_any.hpp"
+#include "srt/srt_socket.hpp"
+
+#include <srt.h>
 
 using namespace std;
 
-int main(int argc, char **argv)
+static int usage(const char *progname)
+{
+    cerr << "Usage : " << progname << " (text|srt_rx)\n";
+    return 1;
+}
+
+static int test()
 {
     ClockTAI ct({"https://127.0.0.1", "https://example.com", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.lis"});
     etiLog.level(info) << "TAI offset = " << ct.get_offset();
@@ -78,3 +88,106 @@ int main(int argc, char **argv)
         etiLog.level(info) << "TAI offset is " << ct.get_offset() << " " << map_to_json(ct.get_all_values());
     }
 }
+
+int srt_rx()
+{
+    std::string host = "0.0.0.0";
+    uint16_t port = 8952;
+    std::map<string, string> options{
+        {"mode", "listener"},
+        //{"bind", "127.0.0.1"}
+    };
+
+    srt_startup();
+    srt_setloglevel(srt_logging::LogLevel::debug);
+
+    bool blocking = false;
+    srt::socket s(host, port, blocking, options);
+    s.listen();
+
+    Socket::UDPSocket s2;
+    Socket::InetAddress dest;
+    dest.resolveUdpDestination("127.0.0.1", 8951);
+
+    while (true) {
+        try {
+            auto data_socket = s.accept();
+
+            while (true) {
+                try {
+                    vector<uint8_t> buf = data_socket->read(2048);
+                    s2.send(buf, dest);
+                }
+                catch (const srt::exception& e) {
+                    etiLog.level(error) << " SRT exception:" << e.what();
+                    break;
+                }
+            }
+        }
+        catch (const srt::exception& e) {
+            etiLog.level(error) << " SRT failed to accept:" << e.what();
+        }
+
+        this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
+    return 0;
+
+    /*
+    SRTSOCKET bind_socket = srt_create_socket();
+    if (bind_socket == SRT_INVALID_SOCK) {
+        throw srt::exception(srt_getlasterror_str());
+    }
+
+    srt::netaddr_any sa = srt::create_addr("127.0.0.1", 8952);
+    const int res = srt_connect(bind_socket, sa.get(), sa.size());
+    if (res == SRT_ERROR) {
+        etiLog.level(error) << srt_getlasterror_str();
+        return 1;
+    }
+
+    while (true) {
+        vector<uint8_t> buf(2048);
+        SRT_MSGCTRL mc = srt_msgctrl_default;
+        const int res = srt_recvmsg2(bind_socket, reinterpret_cast<char*>(buf.data()), (int)buf.size(), &mc);
+        if (res > 0) {
+            buf.resize(res);
+            etiLog.level(debug) << buf.size();
+            if (buf.size() == 0) {
+                break;
+            }
+
+            s2.send(buf, dest);
+        }
+        else if (res == 0) {
+            break;
+        }
+        else {
+            etiLog.level(error) << srt_getlasterror_str();
+            return 1;
+        }
+    }
+    */
+}
+
+int main(int argc, char **argv)
+{
+    std::string cmd;
+    if (argc > 1) {
+        cmd = argv[1];
+    }
+
+    if (argc == 1) {
+        return usage(argv[0]);
+    }
+    else if (argc == 2 and cmd == "test") {
+        return test();
+    }
+    else if (argc == 2 and cmd == "srt_rx") {
+        return srt_rx();
+    }
+    else {
+        return usage(argv[0]);
+    }
+}
+

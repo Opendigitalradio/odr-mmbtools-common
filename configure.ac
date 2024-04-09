@@ -27,14 +27,16 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
 
 # EDI and ZMQ output metadata require TAI-UTC offset, which requires downloading the IETF TAI bulletin
-AC_CHECK_LIB(curl, curl_easy_init)
+AC_CHECK_LIB(curl, curl_easy_init, [CURL_LIBS="-lcurl"])
 have_curl=$ac_cv_lib_curl_curl_easy_init
+AS_IF([test "x$have_curl" = "xyes"], [
+       AC_DEFINE(HAVE_CURL, [1], [Define if cURL is available])
+       ])
+AS_IF([test "x$have_curl" = "xno"], [AC_MSG_WARN([cURL not found, timestamps will not work])])
 
-AS_IF([test "x$have_curl" = "xyes"],
-             [AC_DEFINE(HAVE_CURL, [1], [Define if cURL is available])])
-
-AS_IF([test "x$have_curl" = "xno"],
-             [AC_MSG_WARN([cURL not found, timestamps will not work])])
+PKG_CHECK_MODULES([SRT], [srt], have_srt=yes, have_srt=no)
+AS_IF([test "x$enable_srt" = "xyes"],
+      [AC_DEFINE(HAVE_SRT, [1], [Define if SRT is available])])
 
 AC_LANG_PUSH([C++])
 AX_CHECK_COMPILE_FLAG([-Wduplicated-cond], [CXXFLAGS="$CXXFLAGS -Wduplicated-cond"], [], ["-Werror"])
@@ -72,9 +74,19 @@ AC_DEFINE([HAVE_ZEROMQ], [1], [Define if ZeroMQ available])
 
 AM_CONDITIONAL([IS_GIT_REPO], [test -d '.git'])
 
+AC_SUBST([CFLAGS], ["$CFLAGS $SRT_CFLAGS $PTHREAD_CFLAGS"])
+AC_SUBST([CXXFLAGS], ["$CXXFLAGS $SRT_CFLAGS $PTHREAD_CFLAGS"])
+AC_SUBST([LIBS], ["$SRT_LIBS $CURL_LIBS $PTHREAD_LIBS"])
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
+echo
+echo " cUrl enabled = $have_curl"
+echo " SRT enabled = $have_srt"
+echo
+echo "***********************************************"
+echo
 
 if test "$have_curl" = "no" ; then
 echo
@@ -82,6 +94,3 @@ echo "WARNING! cURL not found: ClockTAI will not work"
 echo
 fi
 
-echo
-echo "***********************************************"
-echo
