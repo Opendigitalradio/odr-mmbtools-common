@@ -45,7 +45,8 @@ static int usage(const char *progname)
 
 static int test()
 {
-    ClockTAI ct({"https://127.0.0.1", "https://example.com", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.lis"});
+    ClockTAI ct;
+    ct.init({"https://127.0.0.1", "https://example.com", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.lis"});
     etiLog.level(info) << "TAI offset = " << ct.get_offset();
 
     WebServer webserver("127.0.0.1", 9091, "This is the index");
