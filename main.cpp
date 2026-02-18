@@ -31,6 +31,7 @@
 #include "edioutput/AFPacket.h"
 #include "srt/netaddr_any.hpp"
 #include "srt/srt_socket.hpp"
+#include "src/webserver.h"
 
 #include <srt.h>
 
@@ -46,6 +47,8 @@ static int test()
 {
     ClockTAI ct({"https://127.0.0.1", "https://example.com", "https://raw.githubusercontent.com/eggert/tz/master/leap-seconds.lis"});
     etiLog.level(info) << "TAI offset = " << ct.get_offset();
+
+    WebServer webserver("127.0.0.1", 9091, "This is the index");
 
     ReedSolomon rs(255, 207);
 

@@ -23,6 +23,7 @@ common_test_SOURCES  = main.cpp \
 					   src/Json.h src/Json.cpp \
 					   src/Socket.h src/Socket.cpp \
 					   src/ThreadsafeQueue.h \
+					   src/webserver.h src/webserver.cpp \
 					   src/charset/charset.h src/charset/charset.cpp \
 					   src/charset/utf8.h \
 					   src/charset/utf8/checked.h \
