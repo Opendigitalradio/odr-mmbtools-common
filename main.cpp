@@ -1,6 +1,6 @@
 /* Testing file
  *
-   Copyright (C) 2019
+   Copyright (C) 2026
    Matthias P. Braendli, matthias.braendli@mpb.li
 
    A test main.
@@ -174,6 +174,91 @@ int srt_rx()
     */
 }
 
+std::vector<std::vector<uint8_t>> readHexFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    std::vector<std::vector<uint8_t>> result;
+    std::string line;
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        std::vector<uint8_t> bytes;
+        // Ensure the line length is even
+        if (line.length() % 2 != 0) {
+            throw std::runtime_error("Hex string length must be even");
+        }
+
+        for (size_t i = 0; i < line.length(); i += 2) {
+            std::string byteString = line.substr(i, 2);
+            uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, nullptr, 16));
+            bytes.push_back(byte);
+        }
+
+        result.push_back(bytes);
+    }
+
+    return result;
+}
+
+
+int pft_rx_test(int argc, char **argv)
+{
+    using namespace std;
+
+    if (argc < 3) return 1;
+
+    int stop_at = -1;
+    vector<int> fragments_to_drop;
+    for (int i = 3; i < argc; i++) {
+        auto value = stoi(argv[i]);
+        if (value >= 0) {
+            fragments_to_drop.push_back(value);
+            etiLog.level(info) << "Will drop " << value;
+        }
+        else {
+            stop_at = -value;
+            etiLog.level(info) << "Will stop at " << stop_at;
+        }
+    }
+
+    auto fragments = readHexFile(argv[2]);
+
+    EdiDecoder::PFT::PFT pft;
+
+    pft.setVerbose(true);
+    pft.setMaxDelay(2);
+
+    int i = 0;
+    for (auto& fragment_data : fragments) {
+        if (std::find(fragments_to_drop.begin(), fragments_to_drop.end(), i) == fragments_to_drop.end()) {
+            EdiDecoder::PFT::Fragment fragment;
+            fragment.loadData(fragment_data);
+            pft.pushPFTFrag(fragment);
+        }
+        else {
+            etiLog.level(info) << "Drop frag " << i;
+        }
+        i++;
+
+        auto af = pft.getNextAFPacket();
+        if (af.af_packet.size() > 0) {
+            etiLog.level(info) << "AF pseq=" << af.pseq;
+        }
+
+        if (stop_at != -1 and i >= stop_at) {
+            etiLog.level(info) << "Stopping at " << i;
+            break;
+        }
+    }
+
+    usleep(100);
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     std::string cmd;
@@ -190,8 +275,10 @@ int main(int argc, char **argv)
     else if (argc == 2 and cmd == "srt_rx") {
         return srt_rx();
     }
+    else if (argc >= 2 and cmd == "pft_rx") {
+        return pft_rx_test(argc, argv);
+    }
     else {
         return usage(argv[0]);
     }
 }
-
