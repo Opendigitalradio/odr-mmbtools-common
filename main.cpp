@@ -37,12 +37,6 @@
 
 using namespace std;
 
-static int usage(const char *progname)
-{
-    cerr << "Usage : " << progname << " (text|srt_rx)\n";
-    return 1;
-}
-
 static int test()
 {
     ClockTAI ct;
@@ -259,6 +253,35 @@ int pft_rx_test(int argc, char **argv)
     return 0;
 }
 
+int udp_multicast_test(int argc, char **argv)
+{
+    Socket::UDPSocket sock;
+    if (argc != 4) {
+        cerr << "Usage " << argv[0] << " " << argv[1] << " MULTICAST_ADDR PORT\n";
+        return 1;
+    }
+
+    string addr = argv[2];
+    uint16_t port = stoi(argv[3]);
+
+    cerr << "Init UDP socket " << addr << ":" << port << "\n";
+    sock.init_receive_multicast(port, "0.0.0.0", addr);
+
+    for (size_t pktcount = 0; pktcount < 100; pktcount++) {
+        const auto packet = sock.receive(2048, 1000);
+        cerr << "RX " << packet.buffer.size() << " from " << packet.address.to_string() << "\n";
+    }
+
+    usleep(100);
+    return 0;
+}
+
+static int usage(const char *progname)
+{
+    cerr << "Usage : " << progname << " (text|srt_rx|pft_rx|udp_multicast)\n";
+    return 1;
+}
+
 int main(int argc, char **argv)
 {
     std::string cmd;
@@ -277,6 +300,9 @@ int main(int argc, char **argv)
     }
     else if (argc >= 2 and cmd == "pft_rx") {
         return pft_rx_test(argc, argv);
+    }
+    else if (argc >= 2 and cmd == "udp_multicast") {
+        return udp_multicast_test(argc, argv);
     }
     else {
         return usage(argv[0]);
